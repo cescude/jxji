@@ -18,7 +18,7 @@ Given some JSON input:
       "e": {}
     }
 
-You can "explode" it into `KEY TYPE DATA... with `jx`, which shows the full
+You can "explode" it into `KEY TYPE DATA...` with `jx`, which shows the full
 path on each line:
 
     $ cat test.json | node jx.js
