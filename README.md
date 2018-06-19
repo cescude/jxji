@@ -21,7 +21,7 @@ Given some JSON input:
 You can "explode" it into `KEY TYPE DATA...` with `jx`, which shows the full
 path on each line:
 
-    $ cat test.json | node jx.js
+    $ cat test.json | jx
     a num 1
     b arr
     b.0 num 2
@@ -35,7 +35,7 @@ path on each line:
 
 (pass through something like `column -t` to not have it mash together):
 
-    $ cat test.json | node jx.js | column -t
+    $ cat test.json | jx | column -t
     a                      num  1
     b                      arr
     b.0                    num  2
@@ -49,13 +49,13 @@ path on each line:
 
 And you can turn it back into JSON by imploding with `ji`:
 
-    $ cat test.json | node jx.js | node ji.js
+    $ cat test.json | jx | ji
     {"a":1,"b":[2,"yes this is a string",{"c":3,"reallylongkeyname":34.3,"d":false},null],"e":{}}
 
 You can manipulate the data using `awk` and `sed` (and whatever else you'd
-like). For example, to rename the `b` array
+like). For example, to rename the `b` array:
 
-    $ cat test.json | node jx.js | sed 's/^b/p/' | column -t
+    $ cat test.json | jx | sed 's/^b/p/' | column -t
     a                      num  1
     p                      arr
     p.0                    num  2
@@ -69,7 +69,7 @@ like). For example, to rename the `b` array
 
 You can then delete the really long key like so:
 
-    $ cat test.json | node jx.js | sed 's/^b/p/' | sed '/^p.2.reallylongkeyname/d' | column -t
+    $ cat test.json | jx | sed 's/^b/p/' | sed '/^p.2.reallylongkeyname/d' | column -t
     a      num  1
     p      arr
     p.0    num  2
@@ -82,6 +82,12 @@ You can then delete the really long key like so:
 
 And then turn it back into JSON with `ji`:
 
-    $ cat test.json | ./jx.js | sed 's/^b/p/'| sed '/^p.2.reallylongkeyname/d' | ./ji.js
+    $ cat test.json | jx | sed 's/^b/p/'| sed '/^p.2.reallylongkeyname/d' | ji
     {"a":1,"p":[2,"indeed",{"c":3,"d":false},null],"e":{}}
     
+# Installing
+
+Clone the repo locally, then link `jx.js` and `ji.js` to someplace on your path:
+
+    $ ln jx.js /usr/local/bin/jx
+    $ ln ji.js /usr/local/bin/ji
