@@ -71,7 +71,7 @@ function implode(obj, type, path, value) {
   return obj;
 }
 
-function implode_text(text) {
+function implode_text(text, compact) {
   function split(str) {
       /(\S+)\s+(\S+)\s+(.*)/.test(str);
     return [RegExp.$1, RegExp.$2, RegExp.$3];
@@ -83,7 +83,10 @@ function implode_text(text) {
     return implode(obj, fields[1], fields[0].split('.'), fields[2]);
   });
   
-  console.log(JSON.stringify(result));
+  console.log(
+    compact
+      ? JSON.stringify(result)
+      : JSON.stringify(result, undefined, 4));
 }
 
 function explode(prefix, json) {
@@ -111,23 +114,24 @@ function explode(prefix, json) {
   return [ { t: '???', n: prefix, v: json } ];
 }
 
-function explode_text(text) {
+function explode_text(text, tab_separator) {
   const json = JSON.parse(text);
   const lines = explode('', json);
   lines.shift();
-  lines.forEach( line => console.log(`${line.n.substr(1)} ${line.t} ${line.v}`) );
+  lines.forEach( line => console.log([line.n.substr(1), line.t, line.v]
+                                     .join(tab_separator ? '\t' : ' ')) );
 }
 
 read(process.stdin, text => {
   try {
-    explode_text(text);
+    explode_text(text, process.argv.includes('-t'));
   }
   catch (e) {
     try {
-      implode_text(text);
+      implode_text(text, process.argv.includes('-c'));
     }
     catch (e) {
-      console.log("Unrecognized input!");
+      console.log(e);
     }
   }
 });
