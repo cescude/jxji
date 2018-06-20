@@ -37,7 +37,7 @@ function implode(obj, type, path, value) {
     // abc.0 => make obj.abc an array
     // abc.def => make obj.abc an object
     if ( !obj.hasOwnProperty(path[0]) ) {
-      if ( /\d+/.test(path[1]) ) {
+      if ( /^\d+$/.test(path[1]) ) {
         obj[path[0]] = [];
       }
       else if ( /.+/.test(path[1]) ) {
