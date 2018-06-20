@@ -32,6 +32,22 @@ function implode(obj, type, path, value) {
   if ( path.length === 0 ) {
   }
   else if ( path.length !== 1 ) {
+
+    // Fuzzy create element;
+    // abc.0 => make obj.abc an array
+    // abc.def => make obj.abc an object
+    if ( !obj.hasOwnProperty(path[0]) ) {
+      if ( /\d+/.test(path[1]) ) {
+        obj[path[0]] = [];
+      }
+      else if ( /.+/.test(path[1]) ) {
+        obj[path[0]] = {};
+      }
+      else {
+        throw `Can't figure out what type of object ${path[0]} is!`;
+      }
+    }
+    
     implode(obj[path[0]], type, path.slice(1), value);
   }
   else if ( type === 'arr' ) {
