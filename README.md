@@ -47,9 +47,9 @@ path on each line:
     b.3                    nul  null
     e                      obj
 
-And you can turn it back into JSON by imploding with `ji`:
+And you can turn it back into JSON by running it back through `jx`:
 
-    $ cat test.json | jx | ji
+    $ cat test.json | jx | jx
     {"a":1,"b":[2,"yes this is a string",{"c":3,"reallylongkeyname":34.3,"d":false},null],"e":{}}
 
 You can manipulate the data using `awk` and `sed` (and whatever else you'd
@@ -80,14 +80,14 @@ You can then delete the really long key like so:
     p.3    nul  null
     e      obj
 
-And then turn it back into JSON with `ji`:
+And then turn it back into JSON with `jx`:
 
-    $ cat test.json | jx | sed 's/^b/p/'| sed '/^p.2.reallylongkeyname/d' | ji
+    $ cat test.json | jx | sed 's/^b/p/'| sed '/^p.2.reallylongkeyname/d' | jx
     {"a":1,"p":[2,"indeed",{"c":3,"d":false},null],"e":{}}
     
 # Installing
 
 Clone the repo locally, then link `jx.js` and `ji.js` to someplace on your path:
 
-    $ ln jx.js /usr/local/bin/jx
-    $ ln ji.js /usr/local/bin/ji
+    $ ln jx.js ~/bin/jx
+    $ ln ji.js ~/bin/jx
