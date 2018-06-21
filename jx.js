@@ -28,7 +28,7 @@ function foldleft(zero, arr, fn) {
   return result;
 }
 
-function implode(compress, obj, type, path, value) {
+function implode(obj, type, path, value) {
   if ( path.length === 0 ) {
   }
   else if ( path.length !== 1 ) {
@@ -40,11 +40,7 @@ function implode(compress, obj, type, path, value) {
       obj[path[0]] = /^\d+$/.test(path[1]) ? [] : {};
     }
     
-    implode(compress, obj[path[0]], type, path.slice(1), value);
-
-    if ( compress && typeof obj[path[0]] === 'object' && obj[path[0]].constructor === Array ) {
-      obj[path[0]] = obj[path[0]].filter( d => d != null );
-    }
+    implode(obj[path[0]], type, path.slice(1), value);
   }
   else if ( type === 'arr' ) {
     obj[path[0]] = [];
@@ -67,6 +63,22 @@ function implode(compress, obj, type, path, value) {
   return obj;
 }
 
+function compress_arrays(obj) {
+  Object.keys(obj).forEach( key => {
+    if ( obj[key] && typeof obj[key] === 'object' && obj[key].constructor === Array ) {
+      const trimmed = [];
+      Object.keys(obj[key]).forEach( k => {
+        trimmed.push(obj[key][k])
+      });
+      obj[key] = trimmed;
+    }
+
+    if ( obj[key] && typeof obj[key] === 'object' ) {
+      compress_arrays(obj[key]);
+    }
+  });
+}
+
 function implode_text(text, compress) {
   function split(str) {
       /(\S+)\s+(\S+)\s+(.*)/.test(str);
@@ -76,8 +88,10 @@ function implode_text(text, compress) {
   const lines = text.split('\n');
   const result = foldleft({}, lines, (obj, line) => {
     const fields = split(line);
-    return implode(compress, obj, fields[1], fields[0].split('.'), fields[2]);
+    return implode(obj, fields[1], fields[0].split('.'), fields[2]);
   });
+
+  if ( compress ) compress_arrays(result);
   
   console.log( JSON.stringify(result, undefined, 4) );
 }
