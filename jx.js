@@ -28,7 +28,7 @@ function foldleft(zero, arr, fn) {
   return result;
 }
 
-function implode(obj, type, path, value) {
+function implode(compress, obj, type, path, value) {
   if ( path.length === 0 ) {
   }
   else if ( path.length !== 1 ) {
@@ -37,18 +37,14 @@ function implode(obj, type, path, value) {
     // abc.0 => make obj.abc an array
     // abc.def => make obj.abc an object
     if ( !obj.hasOwnProperty(path[0]) ) {
-      if ( /^\d+$/.test(path[1]) ) {
-        obj[path[0]] = [];
-      }
-      else if ( /.+/.test(path[1]) ) {
-        obj[path[0]] = {};
-      }
-      else {
-        throw `Can't figure out what type of object ${path[0]} is!`;
-      }
+      obj[path[0]] = /^\d+$/.test(path[1]) ? [] : {};
     }
     
-    implode(obj[path[0]], type, path.slice(1), value);
+    implode(compress, obj[path[0]], type, path.slice(1), value);
+
+    if ( compress && typeof obj[path[0]] === 'object' && obj[path[0]].constructor === Array ) {
+      obj[path[0]] = obj[path[0]].filter( d => d != null );
+    }
   }
   else if ( type === 'arr' ) {
     obj[path[0]] = [];
@@ -71,7 +67,7 @@ function implode(obj, type, path, value) {
   return obj;
 }
 
-function implode_text(text, compact) {
+function implode_text(text, compress) {
   function split(str) {
       /(\S+)\s+(\S+)\s+(.*)/.test(str);
     return [RegExp.$1, RegExp.$2, RegExp.$3];
@@ -80,13 +76,10 @@ function implode_text(text, compact) {
   const lines = text.split('\n');
   const result = foldleft({}, lines, (obj, line) => {
     const fields = split(line);
-    return implode(obj, fields[1], fields[0].split('.'), fields[2]);
+    return implode(compress, obj, fields[1], fields[0].split('.'), fields[2]);
   });
   
-  console.log(
-    compact
-      ? JSON.stringify(result)
-      : JSON.stringify(result, undefined, 4));
+  console.log( JSON.stringify(result, undefined, 4) );
 }
 
 function explode(prefix, json) {
