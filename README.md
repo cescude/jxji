@@ -87,7 +87,6 @@ And then turn it back into JSON with `jx`:
     
 # Installing
 
-Clone the repo locally, then link `jx.js` and `ji.js` to someplace on your path:
+Clone the repo locally, then link or copy `jx.js` to someplace on your path:
 
-    $ ln jx.js ~/bin/jx
-    $ ln ji.js ~/bin/jx
+    $ ln -s $(pwd)/jx.js ~/bin/jx
