@@ -93,7 +93,7 @@ function implode_text(text, compress) {
 
   if ( compress ) compress_arrays(result);
   
-  console.log( JSON.stringify(result, undefined, 4) );
+  console.log( JSON.stringify(result, undefined, 2) );
 }
 
 function explode(prefix, json) {
